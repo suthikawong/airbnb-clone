@@ -1,30 +1,40 @@
+'use client'
+
 import { cn } from '@/lib/utils'
-import React, { PropsWithChildren } from 'react'
-import FilterMenu from './FilterMenu'
+import React, { PropsWithChildren, useEffect, useState } from 'react'
 import AppIcon from '../../icons/AppIcon'
-import SearchIconDesktop from '../../icons/SearchIconDesktop'
+import LanguageIcon from '../../icons/LanguageIcon'
 import SearchIconMobile from '../../icons/SearchIconMobile'
 import SettingIcon from '../../icons/SettingIcon'
 import { Button } from '../../ui/button'
 import { Separator } from '../../ui/separator'
-import LanguageIcon from '../../icons/LanguageIcon'
-import { Popover, PopoverContent, PopoverTrigger } from '../../ui/popover'
-import HamburgerIcon from '../../icons/HamburgerIcon'
 import Wrapper from '../Wrapper'
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarTrigger,
-} from '../../ui/menubar'
+import FilterMenu from './FilterMenu'
+import ProfileMenu from './ProfileMenu'
 import SearchBar from './SearchBar'
+import SearchIconDesktop from '@/components/icons/SearchIconDesktop'
 
 interface AppHeaderProps extends PropsWithChildren {}
 
 const AppHeader: React.FC<AppHeaderProps> = () => {
+  const [isTop, setIsTop] = useState(true)
+
+  useEffect(() => {
+    const handleScroll = async () => {
+      const position = window.scrollY
+      console.log('TLOG ~ position:', position)
+      if (position === 0) {
+        setIsTop(true)
+      } else {
+        setIsTop(false)
+      }
+    }
+    window.addEventListener('scrollend', handleScroll)
+    return () => {
+      window.removeEventListener('scrollend', handleScroll)
+    }
+  }, [])
+
   return (
     <>
       <header className="block md:hidden sticky top-0 bg-white border-b shadow-md">
@@ -51,20 +61,26 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
           <FilterMenu />
         </Wrapper>
       </header>
-      <header className="hidden md:block">
+
+      <header className={cn('hidden md:block sticky top-0 bg-white')}>
         <Wrapper>
-          <div className="h-20 flex items-center justify-between relatvie">
-            <AppIcon className="text-primary" />
-            <div className="flex flex-1 items-center justify-center absolute left-1/2 right-1/2">
-              <MainMenu
-                memuList={[
-                  { name: 'Stays', href: '', active: true },
-                  { name: 'Experiences', href: '' },
-                  { name: 'Online Experiences', href: '' },
-                ]}
-                className="hidden px-6 lg:flex items-center justify-between"
-              />
+          <div className="h-20 flex items-center justify-between relative">
+            <div className="flex items-center">
+              <AppIcon className="text-primary" />
+              {!isTop && <SmallFilterMenu />}
             </div>
+            {isTop && (
+              <div className="flex flex-1 items-center justify-center absolute left-1/2 right-1/2">
+                <MainMenu
+                  memuList={[
+                    { name: 'Stays', href: '', active: true },
+                    { name: 'Experiences', href: '' },
+                    { name: 'Online Experiences', href: '' },
+                  ]}
+                  className="hidden px-6 lg:flex items-center justify-between"
+                />
+              </div>
+            )}
             <div className="flex items-center">
               <Button
                 variant="ghost"
@@ -78,49 +94,52 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
               >
                 <LanguageIcon />
               </Button>
-              <Menubar className="border-0 p-0 ml-2">
-                <MenubarMenu>
-                  <MenubarTrigger className="w-[84px] p-2 pl-3.5 !bg-white rounded-full border flex justify-between items-center hover:shadow-md">
-                    <HamburgerIcon />
-                    <div className="size-8 rounded-full bg-black text-white flex items-center justify-center">S</div>
-                  </MenubarTrigger>
-                  <MenubarContent
-                    align="end"
-                    data-state="open"
-                    className="py-2 px-0 rounded-xl"
-                  >
-                    <MenubarItem className="font-semibold">Messages</MenubarItem>
-                    <MenubarItem className="font-semibold">Notifications</MenubarItem>
-                    <MenubarItem className="font-semibold">Trips</MenubarItem>
-                    <MenubarItem className="font-semibold">Wishlists</MenubarItem>
-                    <MenubarSeparator />
-                    <MenubarItem>Manage listings</MenubarItem>
-                    <MenubarItem>Refer a Host</MenubarItem>
-                    <MenubarItem>Account</MenubarItem>
-                    <MenubarSeparator />
-                    <MenubarItem>Gift Cards</MenubarItem>
-                    <MenubarItem>Help Center</MenubarItem>
-                    <MenubarItem>Logout</MenubarItem>
-                  </MenubarContent>
-                </MenubarMenu>
-              </Menubar>
+              <ProfileMenu />
             </div>
           </div>
-          <div className="pb-5">
-            <MainMenu
-              memuList={[
-                { name: 'Stays', href: '', active: true },
-                { name: 'Experiences', href: '' },
-                { name: 'Online Experiences', href: '' },
-              ]}
-              className="hidden mt-1 mb-5 md:flex lg:hidden"
-            />
-            <SearchBar />
-          </div>
+          {isTop && (
+            <div className="pb-5">
+              <MainMenu
+                memuList={[
+                  { name: 'Stays', href: '', active: true },
+                  { name: 'Experiences', href: '' },
+                  { name: 'Online Experiences', href: '' },
+                ]}
+                className="hidden mt-1 mb-5 md:flex lg:hidden"
+              />
+              <SearchBar />
+            </div>
+          )}
         </Wrapper>
         <Separator />
+        <Wrapper>
+          <FilterMenu className="hidden md:block sticky" />
+        </Wrapper>
       </header>
     </>
+  )
+}
+
+interface SmallFilterMenuProps {}
+
+const SmallFilterMenu: React.FC<SmallFilterMenuProps> = () => {
+  return (
+    <div className="flex justify-self-end lg:absolute lg:translate-x-[-50%] lg:left-[50%] h-12 mx-6 items-center border shadow-md rounded-full hover:shadow-lg hover:cursor-pointer">
+      <div className="text-sm text-base-primary font-medium px-4 line-clamp-1">Anywhere</div>
+      <Separator
+        orientation="vertical"
+        className="h-6"
+      />
+      <div className="text-sm text-base-primary font-medium px-4 line-clamp-1">Any week</div>
+      <Separator
+        orientation="vertical"
+        className="h-6"
+      />
+      <div className="text-sm text-base-secondary px-4 line-clamp-1">Add guests</div>
+      <div className="bg-primary size-8 min-w-8 rounded-full flex items-center justify-center mr-2">
+        <SearchIconDesktop className="text-white size-3.5" />
+      </div>
+    </div>
   )
 }
 

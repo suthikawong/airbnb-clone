@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import React from 'react'
 
 interface SearchIconDesktopProps {
@@ -12,7 +13,7 @@ const SearchIconDesktop: React.FC<SearchIconDesktopProps> = ({ className }) => {
       aria-hidden="true"
       role="presentation"
       focusable="false"
-      className="block size-4 fill-none stroke-current stroke-[4] overflow-visible"
+      className={cn('block size-4 fill-none stroke-current stroke-[4] overflow-visible', className)}
     >
       <path
         className={className}
