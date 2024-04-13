@@ -13,6 +13,7 @@ import FilterMenu from './FilterMenu'
 import ProfileMenu from './ProfileMenu'
 import SearchBar from './SearchBar'
 import SearchIconDesktop from '@/components/icons/SearchIconDesktop'
+import Link from 'next/link'
 
 interface AppHeaderProps extends PropsWithChildren {}
 
@@ -82,12 +83,14 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
               </div>
             )}
             <div className="flex items-center">
-              <Button
-                variant="ghost"
-                className="rounded-full p-3"
-              >
-                Switch to hosting
-              </Button>
+              <Link href="/hosting">
+                <Button
+                  variant="ghost"
+                  className="rounded-full p-3"
+                >
+                  Switch to hosting
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 className="p-0 rounded-full h-[42px] w-[42px] flex items-center justify-center"

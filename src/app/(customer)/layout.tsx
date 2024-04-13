@@ -1,7 +1,7 @@
-import { cn } from '@/lib/utils'
+import AppHeader from '@/components/app/header/AppHeader'
 import type { Metadata } from 'next'
 import { Roboto } from 'next/font/google'
-import './globals.css'
+import './../globals.css'
 
 const roboto = Roboto({ subsets: ['latin'], weight: ['100', '300', '400', '500', '700', '900'] })
 
@@ -16,8 +16,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={cn(roboto.className, 'min-h-screen flex flex-col relative')}>{children}</body>
-    </html>
+    <>
+      <AppHeader />
+      {children}
+    </>
   )
 }
