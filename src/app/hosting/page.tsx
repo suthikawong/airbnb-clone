@@ -1,15 +1,25 @@
 'use client'
 
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+// import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import Wrapper from '@/components/app/Wrapper'
+import { fetchRoom } from '@/api/room'
+import { useQuery } from '@tanstack/react-query'
 
 const HostingPage = () => {
   const form = useForm()
+
+  const { data: rooms } = useQuery({
+    queryKey: ['fetchRoom'],
+    queryFn: async () => fetchRoom(),
+  })
+
+  console.log('TLOG ~ rooms:', rooms)
+
   return (
     <Wrapper>
       <Form {...form}>

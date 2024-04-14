@@ -1,3 +1,4 @@
+import Providers from '@/lib/providers'
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
 import { Roboto } from 'next/font/google'
@@ -17,7 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(roboto.className, 'min-h-screen flex flex-col relative')}>{children}</body>
+      <body className={cn(roboto.className, 'min-h-screen flex flex-col relative')}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   )
 }
