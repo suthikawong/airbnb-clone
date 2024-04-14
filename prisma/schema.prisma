@@ -1,0 +1,93 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  email        String        @unique
+  name         String?
+  address      String?
+  country      String?
+  rooms        Room[]
+  reservations Reservation[]
+  reviews      Review[]
+}
+
+model Room {
+  id             String     @id @default(uuid()) @db.Uuid
+  imageIds       String[]
+  images         Image[]
+  maxGuests      Int
+  bedroomNumber  Int
+  bedNumber      Int
+  bathNumber     Int
+  price          Int
+  detail         String
+  maxReservation Int
+  allowAnimal    Boolean
+  offering       Offering[]
+  review         Review[]
+  owner          User?      @relation(fields: [ownerId], references: [id])
+  ownerId        String?    @db.Uuid
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Image {
+  id     String @id @db.Uuid
+  roomId String @db.Uuid
+  room   Room   @relation(fields: [roomId], references: [id])
+}
+
+model Offering {
+  id            String      @id @default(uuid()) @db.Uuid
+  lutOffering   LutOffering @relation(fields: [lutOfferingId], references: [id])
+  lutOfferingId Int
+  room          Room?       @relation(fields: [roomId], references: [id])
+  roomId        String?     @db.Uuid
+}
+
+model LutOffering {
+  id       Int        @id @unique @default(autoincrement())
+  name     String
+  icon     String
+  offering Offering[]
+}
+
+model Reservation {
+  id             String   @id @default(uuid()) @db.Uuid
+  checkInDate    DateTime
+  checkOutDate   DateTime
+  adultNumber    Int
+  childrenNumber Int
+  infactNumber   Int
+  petNumber      Int
+  owner          User?    @relation(fields: [ownerId], references: [id])
+  ownerId        String?  @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Review {
+  id            String   @id @default(uuid()) @db.Uuid
+  comment       String
+  cleanliness   Int
+  accuracy      Int
+  checkIn       Int
+  communication Int
+  location      Int
+  value         Int
+  overallRating Int
+  room          Room     @relation(fields: [roomId], references: [id])
+  roomId        String   @db.Uuid
+  author        User?    @relation(fields: [authorId], references: [id])
+  authorId      String?  @db.Uuid
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
