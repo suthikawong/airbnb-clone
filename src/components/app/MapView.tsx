@@ -27,6 +27,8 @@ const MapView: React.FC<MapViewProps> = ({ center, showMarker = false, allowMark
       zoom: 9,
     })
 
+    map.current.addControl(new maplibregl.NavigationControl(), 'top-right')
+
     // show mark at the center
     if (showMarker && center) {
       marker.current = new maplibregl.Marker({ color: '#FF0000' }).setLngLat(center).addTo(map.current!)
