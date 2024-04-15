@@ -9,23 +9,23 @@ import { Input } from '@/components/ui/input'
 import Wrapper from '@/components/app/Wrapper'
 import { fetchRoom } from '@/api/room'
 import { useQuery } from '@tanstack/react-query'
+import { useEffect, useRef, useState } from 'react'
+import MapView from '@/components/app/MapView'
 
 const HostingPage = () => {
   const form = useForm()
 
-  const { data: rooms } = useQuery({
-    queryKey: ['fetchRoom'],
-    queryFn: async () => fetchRoom(),
-  })
-
-  console.log('TLOG ~ rooms:', rooms)
+  // const { data: rooms } = useQuery({
+  //   queryKey: ['fetchRoom'],
+  //   queryFn: async () => fetchRoom(),
+  // })
 
   return (
     <Wrapper>
       <Form {...form}>
         <form
           // onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-2"
+          className="space-y-2 relative"
         >
           <FormField
             control={form.control}
@@ -157,6 +157,24 @@ const HostingPage = () => {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="location"
+            render={() => (
+              <FormItem>
+                <FormLabel>Location</FormLabel>
+                <FormControl>
+                  <MapView
+                    showMarker
+                    allowMarked
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button type="submit">Create Room</Button>
         </form>
       </Form>
