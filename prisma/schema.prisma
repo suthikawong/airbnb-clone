@@ -7,8 +7,6 @@ model User {
   id           String        @id @default(uuid()) @db.Uuid
   email        String        @unique
   name         String?
-  address      String?
-  country      String?
   rooms        Room[]
   reservations Reservation[]
   reviews      Review[]
@@ -16,6 +14,10 @@ model User {
 
 model Room {
   id             String     @id @default(uuid()) @db.Uuid
+  name           String
+  country        String
+  lat            Float
+  lng            Float
   imageIds       String[]
   images         Image[]
   maxGuests      Int
