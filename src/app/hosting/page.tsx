@@ -1,51 +1,80 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
-// import { z } from 'zod'
-
+import { createRoom } from '@/api/room'
+import { CreateRoomSchema, CreateRoomType } from '@/api/room/types'
+import MapView from '@/components/app/MapView'
+import Wrapper from '@/components/app/Wrapper'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import Wrapper from '@/components/app/Wrapper'
-import { fetchRoom } from '@/api/room'
-import { useQuery } from '@tanstack/react-query'
-import { useEffect, useRef, useState } from 'react'
-import MapView from '@/components/app/MapView'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as maptilersdk from '@maptiler/sdk'
+import { useMutation } from '@tanstack/react-query'
+import maplibregl from 'maplibre-gl'
+import { useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 const HostingPage = () => {
-  const form = useForm()
+  const form = useForm<CreateRoomType>({
+    resolver: zodResolver(CreateRoomSchema),
+    defaultValues: {
+      name: '',
+      country: '',
+      lat: undefined,
+      lng: undefined,
+      imageIds: [],
+      maxGuests: 0,
+      bedroomNumber: 0,
+      bedNumber: 0,
+      bathNumber: 0,
+      price: 0,
+      detail: '',
+      maxReservation: 0,
+      allowAnimal: false,
+      // ownerId: '4ce7195a-af9a-48cf-bf5f-3a2d50e7b7ec',
+    },
+  })
 
-  // const { data: rooms } = useQuery({
-  //   queryKey: ['fetchRoom'],
-  //   queryFn: async () => fetchRoom(),
-  // })
+  const [mapLoading, setMapLoading] = useState(false)
+
+  const { mutateAsync: mutateCreateRoom, isPending } = useMutation({
+    mutationFn: createRoom,
+  })
+
+  const onSubmit: SubmitHandler<CreateRoomType> = async (data) => {
+    try {
+      await mutateCreateRoom(data)
+      toast.success('Room saved')
+    } catch (error: any) {
+      toast.error(error?.message)
+    }
+  }
+
+  const onSelectLocation = (coors: maplibregl.LngLat, result: maptilersdk.GeocodingFeature) => {
+    const { lat, lng } = coors
+    const country = result.context?.[result.context?.length - 1]?.text_en
+    if (country) {
+      form.setValue('lat', lat)
+      form.setValue('lng', lng)
+      form.setValue('country', country)
+    }
+  }
 
   return (
     <Wrapper>
       <Form {...form}>
         <form
-          // onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-2 relative"
         >
           <FormField
             control={form.control}
-            name="placeName"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Place Name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="country"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Country</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -60,7 +89,10 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Max Guests</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -73,7 +105,10 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Bedroom Number</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -86,7 +121,10 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Bed Number</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -99,7 +137,10 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Bath Number</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -112,7 +153,10 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Price</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -138,7 +182,10 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Max Reservation</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    type="number"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -151,16 +198,19 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Allow Animal</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    className="ml-4"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
-            name="location"
+            name="country"
             render={() => (
               <FormItem>
                 <FormLabel>Location</FormLabel>
@@ -168,6 +218,8 @@ const HostingPage = () => {
                   <MapView
                     showMarker
                     allowMarked
+                    onChange={onSelectLocation}
+                    setLoading={setMapLoading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -175,7 +227,12 @@ const HostingPage = () => {
             )}
           />
 
-          <Button type="submit">Create Room</Button>
+          <Button
+            type="submit"
+            disabled={isPending || mapLoading}
+          >
+            Create Room
+          </Button>
         </form>
       </Form>
     </Wrapper>

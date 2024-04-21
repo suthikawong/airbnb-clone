@@ -3,6 +3,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 model User {
   id           String        @id @default(uuid()) @db.Uuid
   email        String        @unique
@@ -25,7 +29,7 @@ model Room {
   bedNumber      Int
   bathNumber     Int
   price          Int
-  detail         String
+  detail         String?
   maxReservation Int
   allowAnimal    Boolean
   offering       Offering[]

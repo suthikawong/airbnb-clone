@@ -5,18 +5,16 @@ import PlaceCard from '@/components/app/pages/home/PlaceCard'
 
 export default function Home() {
   return (
-    <main>
-      <Wrapper className="mt-4 mb-18">
-        <div className="grid gap-6 min-[550px]:grid-cols-2 lg:grid-cols-3 min-[1128px]:grid-cols-4 min-[1640px]:grid-cols-5 min-[1880px]:grid-cols-6">
-          {data.map((item, index) => (
-            <PlaceCard
-              key={index}
-              data={item}
-            />
-          ))}
-        </div>
-      </Wrapper>
-    </main>
+    <Wrapper className="mt-4 mb-18">
+      <div className="grid gap-6 min-[550px]:grid-cols-2 lg:grid-cols-3 min-[1128px]:grid-cols-4 min-[1640px]:grid-cols-5 min-[1880px]:grid-cols-6">
+        {data.map((item, index) => (
+          <PlaceCard
+            key={index}
+            data={item}
+          />
+        ))}
+      </div>
+    </Wrapper>
   )
 }
 

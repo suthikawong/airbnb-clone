@@ -1,3 +1,4 @@
+import { Toaster } from 'sonner'
 import Providers from '@/lib/providers'
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
@@ -19,7 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(roboto.className, 'min-h-screen flex flex-col relative')}>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Toaster
+            richColors
+            closeButton
+          />
+        </Providers>
       </body>
     </html>
   )
