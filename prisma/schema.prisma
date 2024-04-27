@@ -41,9 +41,10 @@ model Room {
 }
 
 model Image {
-  id     String @id @db.Uuid
-  roomId String @db.Uuid
-  room   Room   @relation(fields: [roomId], references: [id])
+  id     String  @id @default(uuid()) @db.Uuid
+  path   String
+  roomId String? @db.Uuid
+  room   Room?   @relation(fields: [roomId], references: [id])
 }
 
 model Offering {

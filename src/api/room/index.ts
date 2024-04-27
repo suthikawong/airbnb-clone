@@ -14,7 +14,9 @@ export const fetchRoom = async () => {
 
 export const createRoom = async (data: CreateRoomType) => {
   try {
-    const result = await db.room.create({ data })
+    const images = data.images
+    delete data.images
+    const result = await db.room.create({ data: { ...data, images: { create: images } } })
     return { data: result }
   } catch (error) {
     console.error('error : ', error)

@@ -12,11 +12,18 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as maptilersdk from '@maptiler/sdk'
 import { useMutation } from '@tanstack/react-query'
 import maplibregl from 'maplibre-gl'
+import Image from 'next/image'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
+const cloudinaryUrl = process.env.NEXT_PUBLIC_CLOUDINARY_URL!
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
+const uploadPreset = process.env.NEXT_PUBLIC_UPLOAD_PRESET!
+
 const HostingPage = () => {
+  const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [previewImages, setPreviewImages] = useState<string[]>([])
   const form = useForm<CreateRoomType>({
     resolver: zodResolver(CreateRoomSchema),
     defaultValues: {
@@ -24,7 +31,7 @@ const HostingPage = () => {
       country: '',
       lat: undefined,
       lng: undefined,
-      imageIds: [],
+      images: [],
       maxGuests: 0,
       bedroomNumber: 0,
       bedNumber: 0,
@@ -45,6 +52,23 @@ const HostingPage = () => {
 
   const onSubmit: SubmitHandler<CreateRoomType> = async (data) => {
     try {
+      const form = new FormData()
+      const newImageUrls = []
+
+      for (let i = 0; i < imageFiles.length; i++) {
+        form.append('file', imageFiles[i])
+        form.append('cloud_name', cloudName)
+        form.append('upload_preset', uploadPreset)
+        const res = await fetch(`${cloudinaryUrl}/${cloudName}/image/upload`, {
+          method: 'post',
+          body: form,
+        })
+        const imageData = await res.json()
+        const imageUrl = imageData.url.toString()
+        newImageUrls.push(imageUrl.split('/image/upload/')[1])
+      }
+      data.images = newImageUrls.map((path) => ({ path }))
+
       await mutateCreateRoom(data)
       toast.success('Room saved')
     } catch (error: any) {
@@ -60,6 +84,15 @@ const HostingPage = () => {
       form.setValue('lng', lng)
       form.setValue('country', country)
     }
+  }
+
+  const onSelectFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const rawFiles = (event.target as HTMLInputElement).files
+    if (!rawFiles) return
+
+    const files = Array.from(rawFiles)
+    setImageFiles(files)
+    setPreviewImages(files.map((file) => URL.createObjectURL(file)))
   }
 
   return (
@@ -208,6 +241,35 @@ const HostingPage = () => {
               </FormItem>
             )}
           />
+          <FormItem>
+            <FormLabel>Upload Image</FormLabel>
+            <FormControl>
+              <Input
+                type="file"
+                multiple
+                accept="image/jpeg, image/jpg, image/png, image/webp"
+                onChange={onSelectFiles}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+          <div className="flex gap-4 ">
+            {previewImages.map((url, index) => (
+              <div
+                key={index}
+                className="p-2 border border-solid rounded-lg"
+              >
+                <div className="relative size-28">
+                  <Image
+                    alt="image"
+                    src={url}
+                    layout="fill"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
           <FormField
             control={form.control}
             name="country"
