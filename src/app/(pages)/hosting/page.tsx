@@ -1,7 +1,7 @@
 'use client'
 
-import { createRoom } from '@/api/room'
-import { CreateRoomSchema, CreateRoomType } from '@/api/room/types'
+import { createRoom } from '@/app/_actions/room'
+import { CreateRoomSchema, CreateRoomType } from '@/app/_actions/room/types'
 import MapView from '@/components/app/MapView'
 import Wrapper from '@/components/app/Wrapper'
 import { Button } from '@/components/ui/button'

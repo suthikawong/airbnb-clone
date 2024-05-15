@@ -1,9 +1,10 @@
-'use client'
-
+import { auth } from '@/auth'
 import Wrapper from '@/components/app/Wrapper'
 import PlaceCard from '@/components/app/pages/home/PlaceCard'
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth()
+  console.log('TLOG ~ session:', session)
   return (
     <Wrapper className="mt-4 mb-18">
       <div className="grid gap-6 min-[550px]:grid-cols-2 lg:grid-cols-3 min-[1128px]:grid-cols-4 min-[1640px]:grid-cols-5 min-[1880px]:grid-cols-6">
