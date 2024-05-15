@@ -47,14 +47,10 @@ export const SignupContent: React.FC = () => {
 
   const onSubmit: SubmitHandler<CreateUserType> = useCallback(
     async (values) => {
-      try {
-        console.log(values)
-        await mutateCreateUser(values)
-        router.push('/')
-        // toast.success('Room saved')
-      } catch (error: any) {
-        toast.error(error?.message)
-      }
+      console.log(values)
+      await mutateCreateUser(values)
+      router.push('/')
+      // toast.success('Room saved')
     },
     [mutateCreateUser, router]
   )

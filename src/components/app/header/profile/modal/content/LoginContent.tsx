@@ -23,18 +23,15 @@ const LoginContent: React.FC = () => {
   })
 
   const onSubmit: SubmitHandler<LoginType> = useCallback(async (value) => {
-    try {
-      console.log(value)
-      await login(value)
-      // await signIn('credentials', {
-      //   email,
-      //   password,
-      //   redirectTo: DEFAULT_LOGIN_REDIRECT,
-      // })
-      // await signIn('credentials',)
-    } catch (error: any) {
-      toast.error(error?.message)
-    }
+    console.log(value)
+    const data = await login(value)
+    if (data.error) toast.error(data.error)
+    // await signIn('credentials', {
+    //   email,
+    //   password,
+    //   redirectTo: DEFAULT_LOGIN_REDIRECT,
+    // })
+    // await signIn('credentials',)
   }, [])
 
   return (

@@ -12,13 +12,13 @@ import { isRedirectError } from 'next/dist/client/components/redirect'
 export const login = async (values: LoginType) => {
   try {
     const validatedValues = LoginSchema.safeParse(values)
-    if (!validatedValues.success) throw new Error('Invalid fields')
+    if (!validatedValues.success) return { error: 'Invalid fields' }
 
     const { email, password } = validatedValues.data
     // const existingUser = await getUserByEmail(email)
 
     // if (!existingUser || !existingUser.email || !existingUser.password) {
-    //   throw new Error('Email does not exist')
+    //   return { error: 'Email does not exist' }
     // }
 
     // if (!existingUser.emailVerified) {
@@ -31,19 +31,14 @@ export const login = async (values: LoginType) => {
       redirectTo: DEFAULT_LOGIN_REDIRECT,
     })
 
-    return { data: { email } }
+    return { email }
   } catch (error) {
-    console.error('error : ', error)
-    if (isRedirectError(error)) {
-      console.error(error)
-      throw error
-    }
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
-          throw new Error('Invalid credentials')
+          return { error: 'Invalid credentials' }
       }
     }
-    throw new Error('Something went wrong')
+    throw error
   }
 }

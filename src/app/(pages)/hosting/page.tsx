@@ -51,29 +51,25 @@ const HostingPage = () => {
   })
 
   const onSubmit: SubmitHandler<CreateRoomType> = async (data) => {
-    try {
-      const form = new FormData()
-      const newImageUrls = []
+    const form = new FormData()
+    const newImageUrls = []
 
-      for (let i = 0; i < imageFiles.length; i++) {
-        form.append('file', imageFiles[i])
-        form.append('cloud_name', cloudName)
-        form.append('upload_preset', uploadPreset)
-        const res = await fetch(`${cloudinaryUrl}/${cloudName}/image/upload`, {
-          method: 'post',
-          body: form,
-        })
-        const imageData = await res.json()
-        const imageUrl = imageData.url.toString()
-        newImageUrls.push(imageUrl.split('/image/upload/')[1])
-      }
-      data.images = newImageUrls.map((path) => ({ path }))
-
-      await mutateCreateRoom(data)
-      toast.success('Room saved')
-    } catch (error: any) {
-      toast.error(error?.message)
+    for (let i = 0; i < imageFiles.length; i++) {
+      form.append('file', imageFiles[i])
+      form.append('cloud_name', cloudName)
+      form.append('upload_preset', uploadPreset)
+      const res = await fetch(`${cloudinaryUrl}/${cloudName}/image/upload`, {
+        method: 'post',
+        body: form,
+      })
+      const imageData = await res.json()
+      const imageUrl = imageData.url.toString()
+      newImageUrls.push(imageUrl.split('/image/upload/')[1])
     }
+    data.images = newImageUrls.map((path) => ({ path }))
+
+    await mutateCreateRoom(data)
+    toast.success('Room saved')
   }
 
   const onSelectLocation = (coors: maplibregl.LngLat, result: maptilersdk.GeocodingFeature) => {
