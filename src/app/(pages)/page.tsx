@@ -2,7 +2,7 @@ import { auth } from '@/auth'
 import Wrapper from '@/components/app/Wrapper'
 import PlaceCard from '@/components/app/pages/home/PlaceCard'
 
-export default async function Home() {
+const Home: React.FC = async () => {
   const session = await auth()
   console.log('TLOG ~ session:', session)
   return (
@@ -18,6 +18,8 @@ export default async function Home() {
     </Wrapper>
   )
 }
+
+export default Home
 
 const data = [
   {

@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { CreateUserSchema, CreateUserType } from './types'
 import bcrypt from 'bcryptjs'
 import { generateVerificationToken } from '@/lib/tokens'
+import { sendVerificationEmail } from '@/lib/mail'
 
 export const createUser = async (values: CreateUserType) => {
   const validatedValues = CreateUserSchema.safeParse(values)
@@ -15,9 +16,9 @@ export const createUser = async (values: CreateUserType) => {
   const hashedPassword = await bcrypt.hash(validatedValues.data.password, 10)
   const user = await db.user.create({ data: { ...validatedValues.data, password: hashedPassword } })
 
-  // TODO: Send verification token email
-
-  // const verificationToken = await generateVerificationToken(validatedValues.data.email)
+  const verificationToken = await generateVerificationToken(validatedValues.data.email)
+  console.log('TLOG ~ verificationToken:', verificationToken)
+  await sendVerificationEmail(verificationToken.email, verificationToken.token)
 
   return user
 }

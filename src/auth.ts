@@ -27,6 +27,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   callbacks: {
+    async signIn({ user, account }) {
+      // Allow OAuth without email verification
+      if (account?.provider !== 'credentials') return true
+      const existingUser = await getUserById(user.id)
+
+      // Prevent sign in without email verification
+      if (!existingUser?.emailVerified) return false
+
+      return true
+    },
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user = { ...session.user, id: token.sub, firstName: token.firstName as string | undefined }
@@ -36,8 +46,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token }) {
       if (!token.sub) return token
       const user = await getUserById(token.sub)
-      if (!user.data) return token
-      token.firstName = user?.data?.firstName
+      console.log('TLOG ~ user:', user)
+      if (!user) return token
+      token.firstName = user?.firstName
       return token
     },
   },

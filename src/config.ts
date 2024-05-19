@@ -3,5 +3,6 @@ export enum Mode {
   Forget = 'forget',
   OAuth = 'oauth',
   Signup = 'signup',
+  EmailVerification = 'email-verification',
   // Error = 'error',
 }

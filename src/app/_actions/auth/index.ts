@@ -1,13 +1,14 @@
 'use server'
 
-import { db } from '@/lib/db'
-import { LoginSchema, LoginType } from './types'
-import { signIn, signOut } from '@/auth'
+import { signIn } from '@/auth'
+import { sendVerificationEmail } from '@/lib/mail'
+import { generateVerificationToken } from '@/lib/tokens'
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes'
 import { AuthError } from 'next-auth'
-import { isRedirectError } from 'next/dist/client/components/redirect'
-// import { generateVerificationToken } from '@/lib/tokens'
-// import { getUserByEmail } from '../user'
+import { getUserByEmail } from '../user'
+import { LoginSchema, LoginType } from './types'
+import { getVerificationTokenByToken } from '../verification-token'
+import { db } from '@/lib/db'
 
 export const login = async (values: LoginType) => {
   try {
@@ -15,15 +16,17 @@ export const login = async (values: LoginType) => {
     if (!validatedValues.success) return { error: 'Invalid fields' }
 
     const { email, password } = validatedValues.data
-    // const existingUser = await getUserByEmail(email)
+    const existingUser = await getUserByEmail(email)
 
-    // if (!existingUser || !existingUser.email || !existingUser.password) {
-    //   return { error: 'Email does not exist' }
-    // }
+    if (!existingUser || !existingUser.email || !existingUser.password) {
+      return { error: 'Email does not exist' }
+    }
 
-    // if (!existingUser.emailVerified) {
-    //   const verificationToken = await generateVerificationToken(existingUser.email)
-    // }
+    if (!existingUser.emailVerified) {
+      const verificationToken = await generateVerificationToken(existingUser.email)
+      await sendVerificationEmail(verificationToken.email, verificationToken.token)
+      return { success: 'Confirmation email sent' }
+    }
 
     await signIn('credentials', {
       email,
@@ -41,4 +44,34 @@ export const login = async (values: LoginType) => {
     }
     throw error
   }
+}
+
+export const emailVerification = async (token: string) => {
+  const existingToken = await getVerificationTokenByToken(token)
+
+  if (!existingToken) {
+    return { error: 'Token does not exist' }
+  }
+
+  const hasExpired = new Date(existingToken.expires) < new Date()
+  if (hasExpired) {
+    return { error: 'Token has expired' }
+  }
+
+  const existingUser = await getUserByEmail(existingToken.email)
+
+  if (!existingUser) {
+    return { error: 'Email does not exist' }
+  }
+
+  await db.user.update({
+    where: { id: existingUser.id },
+    data: { emailVerified: new Date(), email: existingToken.email },
+  })
+
+  await db.verificationToken.delete({
+    where: { id: existingToken.id },
+  })
+
+  return { success: 'Email verified' }
 }

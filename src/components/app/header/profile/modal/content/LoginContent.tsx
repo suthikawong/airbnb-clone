@@ -14,6 +14,8 @@ import { toast } from 'sonner'
 
 const LoginContent: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState<string>()
+  const [success, setSuccess] = useState<string>()
   const form = useForm<LoginType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -25,7 +27,8 @@ const LoginContent: React.FC = () => {
   const onSubmit: SubmitHandler<LoginType> = useCallback(async (value) => {
     console.log(value)
     const data = await login(value)
-    if (data.error) toast.error(data.error)
+    if (data.error) setError(data.error)
+    else if (data.success) setSuccess(data.success)
     // await signIn('credentials', {
     //   email,
     //   password,
@@ -95,6 +98,8 @@ const LoginContent: React.FC = () => {
               )}
             />
           </div>
+          {error && <div>{error}</div>}
+          {success && <div>{success}</div>}
           <DialogFooter className="flex-col gap-3">
             <Button
               type="submit"
