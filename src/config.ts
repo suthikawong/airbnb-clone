@@ -4,5 +4,5 @@ export enum Mode {
   OAuth = 'oauth',
   Signup = 'signup',
   EmailVerification = 'email-verification',
-  // Error = 'error',
+  ResetPassword = 'reset-password',
 }

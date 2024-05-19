@@ -7,18 +7,13 @@ import LoginContent from './content/LoginContent'
 import OAuthContent from './content/OAuthContent'
 import SignupContent from './content/SignupContent'
 import EmailVerificationContent from './content/EmailVerificationContent'
+import ResetContent from './content/ResetContent'
 
 const LoginModal: React.FC = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const mode = useMemo(() => {
-    if (searchParams.get('token')) {
-      return Mode.EmailVerification
-    } else {
-      return searchParams.get('mode')
-    }
-  }, [searchParams])
+  const mode = useMemo(() => searchParams.get('mode'), [searchParams])
 
   const showBackBtn = useMemo(() => {
     if (mode === Mode.Forget || mode === Mode.Signup) return true
@@ -51,6 +46,8 @@ const LoginModal: React.FC = () => {
           <SignupContent />
         ) : mode === Mode.EmailVerification ? (
           <EmailVerificationContent />
+        ) : mode === Mode.ResetPassword ? (
+          <ResetContent />
         ) : null}
       </DialogContent>
     </Dialog>

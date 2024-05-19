@@ -1,26 +1,30 @@
-import { forgetPassword } from '@/app/_actions/auth'
-import { ForgetSchema, ForgetType } from '@/app/_actions/auth/types'
+import { emailVerification, resetPassword } from '@/app/_actions/auth'
+import { ResetSchema, ResetType } from '@/app/_actions/auth/types'
 import { Button } from '@/components/ui/button'
 import { DialogBody, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useCallback, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import React, { useCallback, useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
-const ForgetContent: React.FC = () => {
+const ResetContent: React.FC = () => {
+  const searchParams = useSearchParams()
+  const token = searchParams.get('token')
   const [error, setError] = useState<string>()
   const [success, setSuccess] = useState<string>()
-  const form = useForm({
-    resolver: zodResolver(ForgetSchema),
+  const [showPassword, setShowPassword] = useState(false)
+  const form = useForm<ResetType>({
+    resolver: zodResolver(ResetSchema),
     defaultValues: {
-      email: '',
+      password: '',
     },
   })
 
-  const onSubmit: SubmitHandler<ForgetType> = useCallback(async (value) => {
+  const onSubmit: SubmitHandler<ResetType> = useCallback(async (value) => {
     console.log(value)
-    const data = await forgetPassword(value)
+    const data = await resetPassword(value, token)
     if (data.error) setError(data.error)
     else if (data.success) setSuccess(data.success)
   }, [])
@@ -28,7 +32,7 @@ const ForgetContent: React.FC = () => {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Forgot password?</DialogTitle>
+        <DialogTitle>Enter a new password</DialogTitle>
       </DialogHeader>
       <Form {...form}>
         <form
@@ -36,22 +40,26 @@ const ForgetContent: React.FC = () => {
           className="space-y-2 relative"
         >
           <DialogBody className="flex flex-col gap-4 h-[284px]">
-            <p>
-              Enter the email address associated with your account, and we&apos;ll email you a link to reset your
-              password.
-            </p>
-
             <FormField
               control={form.control}
-              name="email"
+              name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Email"
-                      className="rounded-lg"
-                    />
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Password"
+                      />
+                      <Button
+                        variant="link"
+                        className="absolute right-0 top-[50%] translate-y-[-50%] text-xs font-semibold text-base-primary underline underline-offset-1"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? 'Hidden' : 'Show'}
+                      </Button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -64,7 +72,7 @@ const ForgetContent: React.FC = () => {
                 type="submit"
                 className="flex-1"
               >
-                Send reset link
+                Reset password
               </Button>
             </DialogFooter>
           </DialogBody>
@@ -74,4 +82,4 @@ const ForgetContent: React.FC = () => {
   )
 }
 
-export default ForgetContent
+export default ResetContent
