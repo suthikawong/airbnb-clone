@@ -46,7 +46,7 @@ const EmailVerificationContent: React.FC = () => {
         <Button
           variant="link"
           className="text-base-primary"
-          onClick={() => router.push(`/?mode=${Mode.Login}`)}
+          onClick={() => router.push(`/?mode=${Mode.OAuth}`)}
         >
           Back to login
         </Button>

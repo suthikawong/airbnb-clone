@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Mode } from '@/config'
 import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import ForgetContent from './content/ForgetContent'
 import LoginContent from './content/LoginContent'
 import OAuthContent from './content/OAuthContent'
@@ -14,8 +14,13 @@ const LoginModal: React.FC = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [openCompleteModal, setOpenCompleteModal] = useState<boolean>(false)
+  const [isClient, setIsClient] = useState<boolean>(false)
 
   const mode = useMemo(() => searchParams.get('mode'), [searchParams])
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const showBackBtn = useMemo(() => {
     if (mode === Mode.Forget || mode === Mode.Signup || mode === Mode.Login)
@@ -32,7 +37,7 @@ const LoginModal: React.FC = () => {
 
   return (
     <>
-      <Dialog modal open={!!mode} onOpenChange={closeModal}>
+      <Dialog modal open={isClient && !!mode} onOpenChange={closeModal}>
         <DialogContent
           showBackBtn={showBackBtn}
           className="sm:max-w-[425px] rounded-xl"
