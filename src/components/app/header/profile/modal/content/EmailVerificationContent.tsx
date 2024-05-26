@@ -1,9 +1,14 @@
 import { emailVerification } from '@/app/_actions/auth'
+import { MessageError, MessageSuccess } from '@/components/ui-custom/message'
+import { Button } from '@/components/ui/button'
 import { DialogBody, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { useSearchParams } from 'next/navigation'
+import { Mode } from '@/config'
+import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import { BeatLoader } from 'react-spinners'
 
 const EmailVerificationContent: React.FC = () => {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -33,16 +38,18 @@ const EmailVerificationContent: React.FC = () => {
       <DialogHeader>
         <DialogTitle>Email Verification</DialogTitle>
       </DialogHeader>
-      <DialogBody className="flex flex-col gap-4 h-[284px]">
-        <p>Confirming your verification</p>
-        {!success && !error && (
-          <svg
-            className="animate-spin h-5 w-5"
-            viewBox="0 0 24 24"
-          />
-        )}
-        {error}
-        {success}
+      <DialogBody className="flex flex-col items-center gap-6">
+        <p className="text-lg">Confirming your verification</p>
+        {!success && !error && <BeatLoader />}
+        <MessageError message={error} />
+        {!error && <MessageSuccess message={success} />}
+        <Button
+          variant="link"
+          className="text-base-primary"
+          onClick={() => router.push(`/?mode=${Mode.Login}`)}
+        >
+          Back to login
+        </Button>
       </DialogBody>
     </>
   )

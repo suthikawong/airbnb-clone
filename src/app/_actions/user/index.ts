@@ -10,14 +10,19 @@ export const createUser = async (values: CreateUserType) => {
   const validatedValues = CreateUserSchema.safeParse(values)
   if (!validatedValues.success) return { error: 'Invalid fields' }
 
-  const exist = await db.user.findUnique({ where: { email: validatedValues.data.email } })
+  const exist = await db.user.findUnique({
+    where: { email: validatedValues.data.email },
+  })
   if (exist) return { error: 'Email already exist' }
 
   const hashedPassword = await bcrypt.hash(validatedValues.data.password, 10)
-  const user = await db.user.create({ data: { ...validatedValues.data, password: hashedPassword } })
+  const user = await db.user.create({
+    data: { ...validatedValues.data, password: hashedPassword },
+  })
 
-  const verificationToken = await generateVerificationToken(validatedValues.data.email)
-  console.log('TLOG ~ verificationToken:', verificationToken)
+  const verificationToken = await generateVerificationToken(
+    validatedValues.data.email
+  )
   await sendVerificationEmail(verificationToken.email, verificationToken.token)
 
   return user

@@ -39,14 +39,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ token, session }) {
       if (token.sub && session.user) {
-        session.user = { ...session.user, id: token.sub, firstName: token.firstName as string | undefined }
+        session.user = {
+          ...session.user,
+          id: token.sub,
+          firstName: token.firstName as string | undefined,
+        }
       }
       return session
     },
     async jwt({ token }) {
       if (!token.sub) return token
       const user = await getUserById(token.sub)
-      console.log('TLOG ~ user:', user)
       if (!user) return token
       token.firstName = user?.firstName
       return token

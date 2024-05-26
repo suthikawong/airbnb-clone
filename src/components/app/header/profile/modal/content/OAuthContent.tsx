@@ -1,29 +1,55 @@
+import { getEmailProvider } from '@/app/_actions/auth'
 import GoogleIcon from '@/components/icons/GoogleIcon'
 import { Button } from '@/components/ui/button'
 import { DialogBody, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Mode } from '@/config'
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import React, { useCallback } from 'react'
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+const EmailSchema = z.object({
+  email: z
+    .string()
+    .min(1, {
+      message: 'Email is required.',
+    })
+    .email({
+      message: 'Enter a valid email.',
+    }),
+})
+
+type EmailType = z.infer<typeof EmailSchema>
 
 const OAuthContent: React.FC = () => {
   const router = useRouter()
-  const form = useForm({
-    // resolver: zodResolver(CreateRoomSchema),
+  const form = useForm<EmailType>({
+    resolver: zodResolver(EmailSchema),
     defaultValues: {
       email: '',
     },
   })
 
-  const onSubmit = useCallback(
-    (value) => {
-      console.log(value)
-      router.push(`/?mode=${Mode.Signup}&email=${value.email}`)
+  const onSubmit: SubmitHandler<EmailType> = useCallback(
+    async (value) => {
+      const result = await getEmailProvider(value.email)
+      if (!result) {
+        router.push(`/?mode=${Mode.Signup}&email=${value.email}`)
+        return
+      }
+      router.push(`/?mode=${Mode.Login}&email=${value.email}`)
     },
     [router]
   )
@@ -43,34 +69,35 @@ const OAuthContent: React.FC = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="gap-4 flex flex-col flex-1"
+            className="flex flex-1 flex-col gap-4"
           >
-            <DialogTitle className="text-[22px] font-medium mb-4">Welcome to Airbnb</DialogTitle>
+            <DialogTitle className="my-4 text-[22px] font-medium">
+              Welcome to Airbnb
+            </DialogTitle>
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Email"
-                    />
+                    <Input {...field} placeholder="Email" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Continue</Button>
+            <Button type="submit" variant="gradient">
+              Continue
+            </Button>
             <div className="flex flex-row items-center">
-              <Separator className="bg-zinc-400 grow w-auto" />
+              <Separator className="w-auto grow bg-zinc-400" />
               <span className="mx-4 text-xs">or</span>
-              <Separator className="bg-zinc-400 grow w-auto" />
+              <Separator className="w-auto grow bg-zinc-400" />
             </div>
             <Button
               type="button"
               variant="outline"
-              className="flex w-full border-black justify-start"
+              className="flex w-full justify-start border-black"
               onClick={onClickGoogle}
             >
               <GoogleIcon />

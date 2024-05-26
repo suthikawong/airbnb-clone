@@ -23,7 +23,6 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
   useEffect(() => {
     const handleScroll = async () => {
       const position = window.scrollY
-      console.log('TLOG ~ position:', position)
       if (position === 0) {
         setIsTop(true)
       } else {
@@ -38,9 +37,9 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
 
   return (
     <>
-      <header className="block md:hidden sticky top-0 bg-white border-b shadow-md">
-        <div className="pt-3.5 px-6 flex items-center gap-2.5">
-          <div className="rounded-full px-1 border h-[54px] w-[500px] shadow-md flex items-center flex-1">
+      <header className="sticky top-0 block border-b bg-white shadow-md md:hidden">
+        <div className="flex items-center gap-2.5 px-6 pt-3.5">
+          <div className="flex h-[54px] w-[500px] flex-1 items-center rounded-full border px-1 shadow-md">
             <SearchIconMobile className="mx-4" />
             <div>
               <div className="text-sm font-medium">Anywhere</div>
@@ -53,7 +52,7 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
           </div>
           <Button
             variant="outline"
-            className="rounded-full size-10 border-zinc-400"
+            className="size-10 rounded-full border-zinc-400"
           >
             <SettingIcon />
           </Button>
@@ -63,37 +62,34 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
         </Wrapper>
       </header>
 
-      <header className={cn('hidden md:block sticky top-0 bg-white')}>
+      <header className={cn('sticky top-0 hidden bg-white md:block')}>
         <Wrapper>
-          <div className="h-20 flex items-center justify-between relative">
+          <div className="relative flex h-20 items-center justify-between">
             <div className="flex items-center">
               <AppIcon className="text-primary" />
               {!isTop && <SmallFilterMenu />}
             </div>
             {isTop && (
-              <div className="flex flex-1 items-center justify-center absolute left-1/2 right-1/2">
+              <div className="absolute left-1/2 right-1/2 flex flex-1 items-center justify-center">
                 <MainMenu
                   memuList={[
                     { name: 'Stays', href: '', active: true },
                     { name: 'Experiences', href: '' },
                     { name: 'Online Experiences', href: '' },
                   ]}
-                  className="hidden px-6 lg:flex items-center justify-between"
+                  className="hidden items-center justify-between px-6 lg:flex"
                 />
               </div>
             )}
             <div className="flex items-center">
               <Link href="/hosting">
-                <Button
-                  variant="ghost"
-                  className="rounded-full p-3"
-                >
+                <Button variant="ghost" className="rounded-full p-3">
                   Switch to hosting
                 </Button>
               </Link>
               <Button
                 variant="ghost"
-                className="p-0 rounded-full h-[42px] w-[42px] flex items-center justify-center"
+                className="flex h-[42px] w-[42px] items-center justify-center rounded-full p-0"
               >
                 <LanguageIcon />
               </Button>
@@ -108,7 +104,7 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
                   { name: 'Experiences', href: '' },
                   { name: 'Online Experiences', href: '' },
                 ]}
-                className="hidden mt-1 mb-5 md:flex lg:hidden"
+                className="mb-5 mt-1 hidden md:flex lg:hidden"
               />
               <SearchBar />
             </div>
@@ -116,7 +112,7 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
         </Wrapper>
         <Separator />
         <Wrapper>
-          <FilterMenu className="hidden md:block sticky" />
+          <FilterMenu className="sticky hidden md:block" />
         </Wrapper>
       </header>
     </>
@@ -127,20 +123,20 @@ interface SmallFilterMenuProps {}
 
 const SmallFilterMenu: React.FC<SmallFilterMenuProps> = () => {
   return (
-    <div className="flex justify-self-end lg:absolute lg:translate-x-[-50%] lg:left-[50%] h-12 mx-6 items-center border shadow-md rounded-full hover:shadow-lg hover:cursor-pointer">
-      <div className="text-sm text-base-primary font-medium px-4 line-clamp-1">Anywhere</div>
-      <Separator
-        orientation="vertical"
-        className="h-6"
-      />
-      <div className="text-sm text-base-primary font-medium px-4 line-clamp-1">Any week</div>
-      <Separator
-        orientation="vertical"
-        className="h-6"
-      />
-      <div className="text-sm text-base-secondary px-4 line-clamp-1">Add guests</div>
-      <div className="bg-primary size-8 min-w-8 rounded-full flex items-center justify-center mr-2">
-        <SearchIconDesktop className="text-white size-3.5" />
+    <div className="mx-6 flex h-12 items-center justify-self-end rounded-full border shadow-md hover:cursor-pointer hover:shadow-lg lg:absolute lg:left-[50%] lg:translate-x-[-50%]">
+      <div className="line-clamp-1 px-4 text-sm font-medium text-base-primary">
+        Anywhere
+      </div>
+      <Separator orientation="vertical" className="h-6" />
+      <div className="line-clamp-1 px-4 text-sm font-medium text-base-primary">
+        Any week
+      </div>
+      <Separator orientation="vertical" className="h-6" />
+      <div className="line-clamp-1 px-4 text-sm text-base-secondary">
+        Add guests
+      </div>
+      <div className="mr-2 flex size-8 min-w-8 items-center justify-center rounded-full bg-primary">
+        <SearchIconDesktop className="size-3.5 text-white" />
       </div>
     </div>
   )
@@ -157,16 +153,16 @@ interface MainMenuProps {
 
 export const MainMenu: React.FC<MainMenuProps> = ({ memuList, className }) => {
   return (
-    <div className={cn('flex justify-center items-center', className)}>
+    <div className={cn('flex items-center justify-center', className)}>
       {memuList.map((menu, index) => (
         <Button
           key={index}
           variant="ghost"
           data-active={menu?.active}
           className={cn(
-            'm-0 px-3 py-2.5 text-base rounded-full text-base-secondary font-normal lg:px-4',
+            'm-0 rounded-full px-3 py-2.5 text-base font-normal text-base-secondary lg:px-4',
             'hover:bg-gray-200 hover:text-base-primary hover:data-[active=true]:bg-inherit',
-            'data-[active=true]:text-base-primary data-[active=true]:font-semibold'
+            'data-[active=true]:font-semibold data-[active=true]:text-base-primary'
           )}
         >
           {menu?.name}

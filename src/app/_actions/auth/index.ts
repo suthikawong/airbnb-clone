@@ -2,15 +2,27 @@
 
 import { signIn } from '@/auth'
 import { sendPasswordResetEmail, sendVerificationEmail } from '@/lib/mail'
-import { generatePasswordResetToken, generateVerificationToken } from '@/lib/tokens'
+import {
+  generatePasswordResetToken,
+  generateVerificationToken,
+} from '@/lib/tokens'
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes'
 import { AuthError } from 'next-auth'
 import { getUserByEmail } from '../user'
-import { ForgetSchema, ForgetType, LoginSchema, LoginType, ResetSchema, ResetType } from './types'
+import {
+  ForgetSchema,
+  ForgetType,
+  LoginSchema,
+  LoginType,
+  ResetSchema,
+  ResetType,
+} from './types'
 import { db } from '@/lib/db'
 import { getVerificationTokenByToken } from '../verification-token'
 import { getPasswordResetTokenByToken } from '../password-reset-token'
 import bcrypt from 'bcryptjs'
+
+export type ProviderType = 'google' | 'credentials'
 
 export const login = async (values: LoginType) => {
   try {
@@ -25,8 +37,13 @@ export const login = async (values: LoginType) => {
     }
 
     if (!existingUser.emailVerified) {
-      const verificationToken = await generateVerificationToken(existingUser.email)
-      await sendVerificationEmail(verificationToken.email, verificationToken.token)
+      const verificationToken = await generateVerificationToken(
+        existingUser.email
+      )
+      await sendVerificationEmail(
+        verificationToken.email,
+        verificationToken.token
+      )
       return { success: 'Confirmation email sent' }
     }
 
@@ -89,12 +106,18 @@ export const forgetPassword = async (values: ForgetType) => {
   if (!existingUser) return { error: 'Email not found' }
 
   const passwordResetToken = await generatePasswordResetToken(email)
-  await sendPasswordResetEmail(passwordResetToken.email, passwordResetToken.token)
+  await sendPasswordResetEmail(
+    passwordResetToken.email,
+    passwordResetToken.token
+  )
 
   return { success: 'Reset email sent' }
 }
 
-export const resetPassword = async (values: ResetType, token: string | null) => {
+export const resetPassword = async (
+  values: ResetType,
+  token: string | null
+) => {
   if (!token) return { error: 'Missing token' }
 
   const validatedFields = ResetSchema.safeParse(values)
@@ -126,4 +149,25 @@ export const resetPassword = async (values: ResetType, token: string | null) => 
   })
 
   return { success: 'Password updated' }
+}
+
+export const getEmailProvider = async (email: string) => {
+  if (!email) return { error: 'Missing email' }
+
+  const existingUser = await db.user.findUnique({
+    where: { email },
+    include: { accounts: true },
+  })
+
+  if (!existingUser) {
+    return null
+  }
+
+  return {
+    email,
+    provider: (existingUser.accounts?.[0]?.provider ||
+      'credentials') as ProviderType,
+    firstName: existingUser.firstName,
+    image: existingUser.image,
+  }
 }

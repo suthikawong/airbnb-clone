@@ -1,18 +1,12 @@
-import { auth } from '@/auth'
 import Wrapper from '@/components/app/Wrapper'
 import PlaceCard from '@/components/app/pages/home/PlaceCard'
 
 const Home: React.FC = async () => {
-  const session = await auth()
-  console.log('TLOG ~ session:', session)
   return (
-    <Wrapper className="mt-4 mb-18">
+    <Wrapper className="mb-18 mt-4">
       <div className="grid gap-6 min-[550px]:grid-cols-2 lg:grid-cols-3 min-[1128px]:grid-cols-4 min-[1640px]:grid-cols-5 min-[1880px]:grid-cols-6">
         {data.map((item, index) => (
-          <PlaceCard
-            key={index}
-            data={item}
-          />
+          <PlaceCard key={index} data={item} />
         ))}
       </div>
     </Wrapper>

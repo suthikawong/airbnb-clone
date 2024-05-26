@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(roboto.className, 'min-h-screen flex flex-col relative')}>
+      <body className={cn(roboto.className, 'min-h-screen flex flex-col relative antialiased')}>
         <Providers>
           {children}
           <Toaster

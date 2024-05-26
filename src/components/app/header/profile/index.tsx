@@ -12,9 +12,9 @@ import { Mode } from '@/config'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, { useCallback, useEffect, useMemo } from 'react'
-import LoginModal from './modal'
+import React, { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
+import LoginModal from './modal'
 
 const ProfileMenu = () => {
   const router = useRouter()
@@ -32,14 +32,14 @@ const ProfileMenu = () => {
 
   return (
     <>
-      <Menubar className="border-0 p-0 ml-2">
+      <Menubar className="ml-2 border-0 p-0">
         <MenubarMenu>
-          <MenubarTrigger className="w-[84px] h-[48px] p-2 pl-3.5 !bg-white rounded-full border flex justify-between items-center hover:shadow-md">
+          <MenubarTrigger className="flex h-[48px] w-[84px] items-center justify-between rounded-full border !bg-white p-2 pl-3.5 hover:shadow-md">
             <HamburgerIcon />
             {isLogin ? (
               <>
                 {data?.user.image ? (
-                  <div className="size-8 rounded-full relative overflow-hidden">
+                  <div className="relative size-8 overflow-hidden rounded-full">
                     <Image
                       alt="profile-image"
                       src={data?.user.image}
@@ -47,7 +47,7 @@ const ProfileMenu = () => {
                     />
                   </div>
                 ) : (
-                  <div className="size-8 rounded-full bg-black text-white flex items-center justify-center">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-black text-white">
                     {data?.user?.firstName?.charAt(0)?.toUpperCase()}
                   </div>
                 )}
@@ -60,7 +60,7 @@ const ProfileMenu = () => {
           <MenubarContent
             align="end"
             data-state="open"
-            className="py-2 px-0 rounded-xl"
+            className="rounded-xl px-0 py-2"
           >
             {isLogin ? <AuthenMenu /> : <UnauthenMenu />}
           </MenubarContent>
@@ -97,17 +97,20 @@ const AuthenMenu = () => {
 const UnauthenMenu: React.FC = () => {
   const pathname = usePathname()
   const router = useRouter()
-  const setLoginMode = useCallback(() => router.push(`${pathname}/?mode=${Mode.Login}`), [pathname, router])
 
   return (
     <>
       <MenubarItem
         className="font-semibold"
-        onClick={setLoginMode}
+        onClick={() => router.push(`${pathname}/?mode=${Mode.OAuth}`)}
+      >
+        Sign Up
+      </MenubarItem>
+      <MenubarItem
+        onClick={() => router.push(`${pathname}/?mode=${Mode.OAuth}`)}
       >
         Log in
       </MenubarItem>
-      <MenubarItem onClick={setLoginMode}>Sign Up</MenubarItem>
       <MenubarSeparator />
       <MenubarItem>Gift Cards</MenubarItem>
       <MenubarItem>Airbnb your home</MenubarItem>
