@@ -1,6 +1,7 @@
 import authConfig from '@/auth.config'
 import { db } from '@/lib/db'
 import { PrismaAdapter } from '@auth/prisma-adapter'
+import { Adapter } from 'next-auth/adapters'
 import NextAuth, { DefaultSession } from 'next-auth'
 import { getUserById } from './app/_actions/user'
 
@@ -30,6 +31,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       // Allow OAuth without email verification
       if (account?.provider !== 'credentials') return true
+      if (!user?.id) return false
       const existingUser = await getUserById(user.id)
 
       // Prevent sign in without email verification
@@ -55,7 +57,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token
     },
   },
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(db) as Adapter,
   session: { strategy: 'jwt' },
   ...authConfig,
 })

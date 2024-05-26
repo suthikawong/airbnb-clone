@@ -12,7 +12,7 @@ import { Mode } from '@/config'
 import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, { useEffect, useMemo } from 'react'
+import React, { Suspense, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import LoginModal from './modal'
 
@@ -66,7 +66,9 @@ const ProfileMenu = () => {
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
-      <LoginModal />
+      <Suspense>
+        <LoginModal />
+      </Suspense>
     </>
   )
 }

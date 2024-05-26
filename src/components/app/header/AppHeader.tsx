@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import React, { PropsWithChildren, useEffect, useState } from 'react'
+import React, { PropsWithChildren, Suspense, useEffect, useState } from 'react'
 import AppIcon from '../../icons/AppIcon'
 import LanguageIcon from '../../icons/LanguageIcon'
 import SearchIconMobile from '../../icons/SearchIconMobile'
@@ -93,7 +93,9 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
               >
                 <LanguageIcon />
               </Button>
-              <ProfileMenu />
+              <Suspense>
+                <ProfileMenu />
+              </Suspense>
             </div>
           </div>
           {isTop && (
