@@ -38,26 +38,25 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ className }) => {
 
   const gapSize = 32
   const offset = containerWidth * 0.4
-  const menuWidth = menuList.reduce((prev, curr) => prev + curr.width, 0) + (menuList.length - 1) * gapSize
+  const menuWidth =
+    menuList.reduce((prev, curr) => prev + curr.width, 0) +
+    (menuList.length - 1) * gapSize
 
   useEffect(() => {
     if (ref?.current?.clientWidth) setContainerWidth(ref.current.clientWidth)
   }, [ref?.current?.clientWidth])
 
   return (
-    <div
-      ref={ref}
-      className={cn('relative overflow-hidden mt-3', className)}
-    >
+    <div ref={ref} className={cn('relative mt-3 overflow-hidden', className)}>
       <div
         className={cn(
-          'z-10 flex absolute w-[74px] h-full pl-2 items-center justify-start top-0 left-0 bg-gradient-to-r from-white',
+          'absolute left-0 top-0 flex h-full w-[74px] items-center justify-start bg-gradient-to-r from-white pl-2',
           position === 0 && 'hidden'
         )}
       >
         <Button
           variant="outline"
-          className="rounded-full size-7 p-0"
+          className="size-7 rounded-full p-0"
           onClick={() => {
             if (position - containerWidth + offset < 0) {
               setPosition(0)
@@ -89,13 +88,13 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ className }) => {
       </div>
       <div
         className={cn(
-          'z-10 flex absolute w-[74px] h-full pr-2 items-center justify-end top-0 right-0 bg-gradient-to-l from-white',
+          'absolute right-0 top-0 flex h-full w-[74px] items-center justify-end bg-gradient-to-l from-white pr-2',
           position >= menuWidth - containerWidth && 'hidden'
         )}
       >
         <Button
           variant="outline"
-          className="rounded-full size-7 p-0"
+          className="size-7 rounded-full p-0"
           onClick={() => {
             if (position + containerWidth * 2 - offset > menuWidth) {
               setPosition(menuWidth - containerWidth)
@@ -119,22 +118,37 @@ interface MenuItemProps extends PropsWithChildren {
   className?: string
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ title, active = false, icon = null, width = 64, className = '' }) => {
+const MenuItem: React.FC<MenuItemProps> = ({
+  title,
+  active = false,
+  icon = null,
+  width = 64,
+  className = '',
+}) => {
   return (
     <div className={cn('group', className)}>
       <div
         className={cn(
-          "after:block after:content-[''] after:h-0.5",
+          "after:block after:h-0.5 after:content-['']",
           { 'after:bg-black': active },
           { 'group-hover:after:bg-[#DDDDDD]': !active }
         )}
       >
-        <div className="my-2.5 py-1 flex flex-col items-center gap-2">
-          <div className={cn('opacity-65 group-hover:opacity-100', { 'opacity-100': active })}>{icon}</div>
-          <span
-            className={cn('text-xs font-medium whitespace-nowrap min-w-16 text-center', {
-              'text-base-primary group-hover:text-black': active,
+        <div className="my-2.5 flex flex-col items-center gap-2 py-1">
+          <div
+            className={cn('opacity-65 group-hover:opacity-100', {
+              'opacity-100': active,
             })}
+          >
+            {icon}
+          </div>
+          <span
+            className={cn(
+              'min-w-16 whitespace-nowrap text-center text-xs font-medium',
+              {
+                'text-base-primary group-hover:text-black': active,
+              }
+            )}
             style={{ width }}
           >
             {title}

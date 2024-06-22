@@ -6,7 +6,14 @@ import MapView from '@/components/app/MapView'
 import Wrapper from '@/components/app/Wrapper'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as maptilersdk from '@maptiler/sdk'
@@ -17,7 +24,7 @@ import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-const cloudinaryUrl = process.env.NEXT_PUBLIC_CLOUDINARY_URL!
+const cloudinaryUrl = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_URL!
 const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
 const uploadPreset = process.env.NEXT_PUBLIC_UPLOAD_PRESET!
 
@@ -72,7 +79,10 @@ const HostingPage = () => {
     toast.success('Room saved')
   }
 
-  const onSelectLocation = (coors: maplibregl.LngLat, result: maptilersdk.GeocodingFeature) => {
+  const onSelectLocation = (
+    coors: maplibregl.LngLat,
+    result: maptilersdk.GeocodingFeature
+  ) => {
     const { lat, lng } = coors
     const country = result.context?.[result.context?.length - 1]?.text_en
     if (country) {
@@ -96,7 +106,7 @@ const HostingPage = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-2 relative"
+          className="relative space-y-2"
         >
           <FormField
             control={form.control}
@@ -118,10 +128,7 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Max Guests</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                  />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -134,10 +141,7 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Bedroom Number</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                  />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -150,10 +154,7 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Bed Number</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                  />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -166,10 +167,7 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Bath Number</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                  />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -182,10 +180,7 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Price</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                  />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -211,10 +206,7 @@ const HostingPage = () => {
               <FormItem>
                 <FormLabel>Max Reservation</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                  />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -251,16 +243,9 @@ const HostingPage = () => {
           </FormItem>
           <div className="flex gap-4 ">
             {previewImages.map((url, index) => (
-              <div
-                key={index}
-                className="p-2 border border-solid rounded-lg"
-              >
+              <div key={index} className="rounded-lg border border-solid p-2">
                 <div className="relative size-28">
-                  <Image
-                    alt="image"
-                    src={url}
-                    layout="fill"
-                  />
+                  <Image alt="image" src={url} layout="fill" />
                 </div>
               </div>
             ))}
@@ -285,10 +270,7 @@ const HostingPage = () => {
             )}
           />
 
-          <Button
-            type="submit"
-            disabled={isPending || mapLoading}
-          >
+          <Button type="submit" disabled={isPending || mapLoading}>
             Create Room
           </Button>
         </form>

@@ -1,5 +1,5 @@
 import AppHeader from '@/components/app/header/AppHeader'
-import './../globals.css'
+import './../../globals.css'
 
 export default function Layout({
   children,

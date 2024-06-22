@@ -62,7 +62,11 @@ const AppHeader: React.FC<AppHeaderProps> = () => {
         </Wrapper>
       </header>
 
-      <header className={cn('sticky top-0 hidden bg-white md:block')}>
+      <header
+        className={cn(
+          'sticky top-0 z-10 hidden bg-white drop-shadow-sm md:block'
+        )}
+      >
         <Wrapper>
           <div className="relative flex h-20 items-center justify-between">
             <div className="flex items-center">

@@ -6,7 +6,7 @@ import React, { PropsWithChildren } from 'react'
 
 interface ProvidersProps extends PropsWithChildren {}
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (

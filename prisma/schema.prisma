@@ -48,7 +48,6 @@ model Room {
   country        String
   lat            Float
   lng            Float
-  imageIds       String[]
   images         Image[]
   maxGuests      Int
   bedroomNumber  Int
